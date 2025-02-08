@@ -21,7 +21,7 @@ const paths = {
   
   custom: {
     scss: "src/assets/scss/theme.scss",
-    dest: "./dist/css" 
+    dest: "./dist/assets/css" 
   },
   compile: {
     scss: "./assets/bootstrap/scss/bootstrap.scss",
@@ -40,11 +40,12 @@ const paths = {
     site:"./",
     index:"./index.html"
   },
-  rellax:{
+  images:{
     from: ['src/assets/images/**/*.*', 'src/assets/images/*.*'],
     to: './dist/assets/images',
   },
-  images: {
+  
+  rellax: {
     from: ['./node_modules/rellax/rellax.min.js'],
     to: './dist/assets/js',
 }
@@ -60,13 +61,14 @@ gulp.task("move-bootstrap-files", function () {
 
   return Promise.all([moveScss]); // Asegura que ambas tareas se completen
 });
+
 gulp.task("move-js-files", function () {
   
   const moveRellax = gulp
-    .src(paths.rellax.scss)
-    .pipe(gulp.dest(`${paths.bootstrap.dest}/bootstrap`));
+    .src(paths.rellax.from)
+    .pipe(gulp.dest(`${paths.rellax.to}`));
 
-  return Promise.all([moveScss]); // Asegura que ambas tareas se completen
+  return Promise.all([moveRellax]); // Asegura que ambas tareas se completen
 });
 
 gulp.task("move-images", function () {
@@ -78,15 +80,8 @@ gulp.task("move-images", function () {
   return Promise.all([moveImg]); 
 });
 
-// Tarea para compilar el SCSS de Bootstrap (sin personalizar)
-// gulp.task("compile-bootstrap", function () {
-//   return gulp
-//     .src(paths.compile.scss)
-//     .pipe(sass().on("error", sass.logError)) // Compila SCSS a CSS
-//     .pipe(cleanCSS()) // Minifica el CSS
-//     .pipe(rename({ suffix: ".min" })) // Agrega el sufijo ".min"
-//     .pipe(gulp.dest(paths.compile.dest)); // Guarda el resultado en la carpeta destino
-// });
+
+
 
 // Tarea para compilar el theme personalizado
 gulp.task('compile-theme',(cb)=>{
@@ -136,5 +131,5 @@ gulp.task(
 );
 gulp.task(
   "default",
-  gulp.series("clean","compile-theme","move-images", parallel('serve','watcher'))
+  gulp.series("clean","compile-theme","move-images","move-js-files", parallel('serve','watcher'))
 );
